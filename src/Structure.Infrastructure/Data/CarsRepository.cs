@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
+using Structure.Infrastructure.Extensions;
 
 namespace Structure.Infrastructure.Data
 {
@@ -25,7 +27,7 @@ namespace Structure.Infrastructure.Data
             throw new NotImplementedException();
         }
 
-        public virtual async Task<IEnumerable<Car>> GetAllAsync(Func<Car, bool>? predicate = null)
+        public virtual async Task<IEnumerable<Car>> GetAllAsync(Expression<Func<Car, bool>>? predicate = null)
         {
             throw new NotImplementedException();
         }
@@ -51,7 +53,7 @@ namespace Structure.Infrastructure.Data
 
         public override async Task<Car> GetByIdAsync(Guid id, string? partitionKey = null)
         {
-            var cached = await _cache.GetAsync(CarCacheKey(id));
+            var cached = await _cache.GetAsync<Car>(CarCacheKey(id));
 
             if (cached != null)
             {
@@ -61,7 +63,7 @@ namespace Structure.Infrastructure.Data
             return await base.GetByIdAsync(id);
         }
 
-        public override async Task<IEnumerable<Car>> GetAllAsync(Func<Car, bool>? predicate = null)
+        public override async Task<IEnumerable<Car>> GetAllAsync(Expression<Func<Car, bool>>? predicate = null)
         {
             throw new NotImplementedException();
             return await base.GetAllAsync(predicate);
