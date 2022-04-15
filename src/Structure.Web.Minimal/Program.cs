@@ -1,10 +1,7 @@
-using System;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Structure.Core.Entities;
+using Structure.Infrastructure.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,12 +21,34 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/cars", (IMediator mediatr) => {
-    throw new NotImplementedException();
-});
+app.MapGet("/exercise/:id", async (IMediator mediatr, [FromRoute] Guid id) =>
+{
+    var exercise = await mediatr.Send(new GetExerciseQuery(id));
 
-app.MapGet("/cars/:id", (IMediator mediatr) => {
-    throw new NotImplementedException();
-});
+    if (exercise != null)
+    {
+        Results.Ok(exercise);
+    }
+    else
+    {
+        Results.NotFound();
+    }
+})
+.Produces<Exercise>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound);
+
+app.MapGet("/exercises", async (IMediator mediatr, [FromQuery] string? name) =>
+{
+    if (!string.IsNullOrWhiteSpace(name))
+    {
+        var searchResults = await mediatr.Send(new SearchExercisesQuery(name));
+        return searchResults;
+    }
+
+    var exercises = await mediatr.Send(new GetExercisesQuery());
+    return exercises;
+})
+.Produces<IEnumerable<Exercise>>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound);
 
 app.Run();

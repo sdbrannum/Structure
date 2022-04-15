@@ -16,4 +16,8 @@
     <None Remove="MediatR" />
     <None Remove="MediatR.Extensions.Microsoft.DependencyInjection" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Structure.Infrastructure\Structure.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>
